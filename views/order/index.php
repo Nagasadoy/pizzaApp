@@ -7,18 +7,21 @@ use yii\bootstrap4\Html;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html as HelpersHtml;
 
-$dataProvider = new ActiveDataProvider([
-    'query' => Order::find()
-        ->joinWith('orderRows'),
-        // ->joinWith('pizzas'),
-        // ->joinWith('pizza', '"pizza".id = "order_row".pizza_id')
-        // ->with('user')
-        // ->with('orderRows'),
-    'pagination' => [
-        'pageSize' => 20,
-    ],
-]);
+// $dataProvider = new ActiveDataProvider([
+//     'query' => Order::find()
+//         ->joinWith('orderRows')
+//         ->orderBy(['time' => SORT_DESC]),
+//         // ->joinWith('pizzas'),
+//         // ->joinWith('pizza', '"pizza".id = "order_row".pizza_id')
+//         // ->with('user')
+//         // ->with('orderRows'),
+
+//     'pagination' => [
+//         'pageSize' => 20,
+//     ],
+// ]);
 echo GridView::widget([
     'dataProvider' => $dataProvider,
     'columns' => [
@@ -28,7 +31,7 @@ echo GridView::widget([
         [
             'attribute' => 'time',
             'header' => 'Дата заказа',
-            'format' =>  ['date', 'php:Y.m.d H:i:s'],
+            'format' =>  ['date', 'php:d.m.Y H:i:s'],
             'options' => ['width' => '300']
         ],
         [
@@ -44,26 +47,38 @@ echo GridView::widget([
         ],
         [
             'header' => 'Клиент',
-            'value' => function ($data) {
-                $firstName = $data->user->first_name;
-                $lastName = $data->user->last_name;
+            'value' => function ($model, $key, $index, $column) {
+                $firstName = $model->user->first_name;
+                $lastName = $model->user->last_name;
                 return $firstName . ' ' . $lastName;
             },
         ],
         // работает не так
-        // [
-        //     'header' => 'Пиццы',
-        //     'value' => function ($data) {
-        //         $orderId = $data->id;
-        //         // debug($data); die;
-        //         $pizzas = Order::pp($orderId);
-        //         $pizzasStr = '';
-        //         foreach($pizzas as $p){
-        //             $pizzasStr.= $p->name . ';';
-        //         }
-        //         return $pizzasStr;
-        //     },
-        // ],
+        [
+            'header' => 'Пиццы',
+            'format' => 'raw',
+            'value' => function ($model, $key, $index, $column) {
+                // var_dump($model);
+                // var_dump($key);
+                // var_dump($index);
+                // var_dump($column); die;
+
+                // $orderId = $model->id;
+                
+                // $pizzas = Order::pp($orderId);
+                // $pizzasStr = '';
+                // foreach($pizzas as $p){
+                //     $pizzasStr.= $p->name . ';';
+                // }
+                // debug($model->orderRows); die;
+                $orderRows = $model->orderRows;
+                $pizzaNames = '<ol> ';
+                foreach($orderRows as $order){
+                    $pizzaNames .= '<li>' . $order->pizza->name . '</li>';
+                }
+                return $pizzaNames . '</ol>';
+            },
+        ],
     ],
 ]);
 

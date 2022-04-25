@@ -25,9 +25,10 @@ class PizzaController extends \yii\web\Controller
             if ($newPizza->save()) {
                 if (count($ingredients) != 0) {
                     // достаем id добавленной пиццы
-                    $id = Yii::$app->db->getLastInsertID();
-                    // ищем по id эту пиццу
-                    $newPizza = Pizza::findOne($id);
+                    // $id = Yii::$app->db->getLastInsertID();
+                    // // ищем по id эту пиццу
+                    // $newPizza = Pizza::findOne($id);
+                    
                     //пробегаемся по всем добавленным ингредиентам и создаем связь с пиццей, которую только что добавили
                     foreach ($ingredients as $ing) {
                         $ing->link('pizzas', $newPizza);

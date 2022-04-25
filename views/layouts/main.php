@@ -40,6 +40,7 @@ AppAsset::register($this);
             ['label' => 'Главная', 'url' => ['/site/index']],
             ['label' => 'Пиццы', 'url' => ['/pizza/index']],
             ['label' => 'Заказы', 'url' => ['/order/index']],
+            ['label' => 'Пользователи', 'url' => ['/user/index']],
         ],
     ]);
     NavBar::end();
