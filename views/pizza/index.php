@@ -41,12 +41,15 @@ foreach($pizzas as $pizza){
 }
 echo '</ul>';
 ?>
-<h1>Добавить новую пиццу</h1>
-<?php
-$form = ActiveForm::begin(['options' => ['id' => 'pizzaForm']]);
-echo $form->field($pizzaModel, 'name');
-echo $form->field($pizzaModel, 'price')->input('number');
-echo $form->field($pizzaModel, 'ingredients')->dropDownList(ArrayHelper::map($allIngredients, 'id', 'name'),  ['multiple' => 'true']);
-echo Html::submitButton('Добавить', ['class' => 'btn btn-dark']);
-ActiveForm::end();
-?>
+<?
+ if(!Yii::$app->user->isGuest && Yii::$app->user->identity->role == 'admin') : ?>
+    <h1>Добавить новую пиццу</h1>
+    <?
+    $form = ActiveForm::begin(['options' => ['id' => 'pizzaForm']]);
+    echo $form->field($pizzaModel, 'name');
+    echo $form->field($pizzaModel, 'price')->input('number');
+    echo $form->field($pizzaModel, 'ingredients')->dropDownList(ArrayHelper::map($allIngredients, 'id', 'name'),  ['multiple' => 'true']);
+    echo Html::submitButton('Добавить', ['class' => 'btn btn-dark']);
+    ActiveForm::end();
+    ?>
+<? endif ?>

@@ -2,59 +2,76 @@
 
 namespace app\models;
 
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 use Yii;
 
-/**
- * This is the model class for table "user".
- *
- * @property int $id
- * @property string|null $birthday
- * @property string|null $first_name
- * @property string|null $last_name
- *
- * @property Order[] $orders
- */
-class User extends \yii\db\ActiveRecord
+class User extends ActiveRecord implements IdentityInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'user';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+    public function setPassword($password)
     {
-        return [
-            [['birthday'], 'safe'],
-            [['first_name', 'last_name'], 'string'],
-        ];
+        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'birthday' => 'Дата рождения',
-            'first_name' => 'Имя',
-            'last_name' => 'Фамилия',
-        ];
-    }
-
-    /**
-     * Gets query for [[Orders]].
+     * Finds an identity by the given ID.
      *
-     * @return \yii\db\ActiveQuery
+     * @param string|int $id the ID to be looked for
+     * @return IdentityInterface|null the identity object that matches the given ID.
      */
-    public function getOrders()
+    public static function findIdentity($id)
     {
-        return $this->hasMany(Order::className(), ['user_id' => 'id']);
+        return static::findOne($id);
+    }
+
+    /**
+     * Finds an identity by the given token.
+     *
+     * @param string $token the token to be looked for
+     * @return IdentityInterface|null the identity object that matches the given token.
+     */
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return static::findOne(['access_token' => $token]);
+    }
+
+    // public static function findBylogin($userName)
+    // {
+    //     return User::find()->where(['=', 'user_name', $userName])->one();
+    // }
+
+    public static function findByUsername($username)
+    {
+        return User::find()->where(['=', 'user_name', $username])->one();
+    }
+
+    /**
+     * @return int|string current user ID
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string current user auth key
+     */
+    public function getAuthKey()
+    {
+        return $this->auth_key;
+    }
+
+    /**
+     * @param string $authKey
+     * @return bool if auth key is valid for current user
+     */
+    public function validateAuthKey($authKey)
+    {
+        return $this->getAuthKey() === $authKey;
     }
 }

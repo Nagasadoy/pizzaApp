@@ -40,7 +40,19 @@ AppAsset::register($this);
             ['label' => 'Главная', 'url' => ['/site/index']],
             ['label' => 'Пиццы', 'url' => ['/pizza/index']],
             ['label' => 'Заказы', 'url' => ['/order/index']],
-            ['label' => 'Пользователи', 'url' => ['/user/index']],
+            ['label' => 'Регистрация', 'url' => ['/user/signup']],
+             Yii::$app->user->isGuest ? (
+                ['label' => 'Login', 'url' => ['/user/login']]
+            ) : (
+                '<li>'
+                . Html::beginForm(['/user/logout'], 'post', ['class' => 'form-inline'])
+                . Html::submitButton(
+                    'Logout (' . Yii::$app->user->identity->user_name . ')',
+                    ['class' => 'btn btn-link logout']
+                )
+                . Html::endForm()
+                . '</li>'
+            )
         ],
     ]);
     NavBar::end();

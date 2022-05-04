@@ -52,5 +52,4 @@ class PizzaController extends \yii\web\Controller
             'allIngredients' => $allIngredients
         ]);
     }
-
 }

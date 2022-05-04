@@ -31,15 +31,15 @@ echo GridView::widget([
         [
             'attribute' => 'time',
             'header' => 'Дата заказа',
-            'format' =>  ['date', 'php:d.m.Y H:i:s'],
+            'format' =>  ['date', 'php:d.m.Y h:i:s'],
             'options' => ['width' => '300']
         ],
         [
             'header' => 'Пожелания',
             'attribute' => 'note',
             'value' => function ($data) {
-                if(empty($data->note)){
-                    return 'Нет примечаний';
+                if (empty($data->note)) {
+                    return 'Нет пожеланий';
                 }
                 return $data->note;
                 // return $firstName . ' ' . $lastName;
@@ -53,27 +53,13 @@ echo GridView::widget([
                 return $firstName . ' ' . $lastName;
             },
         ],
-        // работает не так
         [
             'header' => 'Пиццы',
             'format' => 'raw',
             'value' => function ($model, $key, $index, $column) {
-                // var_dump($model);
-                // var_dump($key);
-                // var_dump($index);
-                // var_dump($column); die;
-
-                // $orderId = $model->id;
-                
-                // $pizzas = Order::pp($orderId);
-                // $pizzasStr = '';
-                // foreach($pizzas as $p){
-                //     $pizzasStr.= $p->name . ';';
-                // }
-                // debug($model->orderRows); die;
                 $orderRows = $model->orderRows;
                 $pizzaNames = '<ol> ';
-                foreach($orderRows as $order){
+                foreach ($orderRows as $order) {
                     $pizzaNames .= '<li>' . $order->pizza->name . '</li>';
                 }
                 return $pizzaNames . '</ol>';
@@ -81,13 +67,15 @@ echo GridView::widget([
         ],
     ],
 ]);
+if (!Yii::$app->user->isGuest) {
+    $form = ActiveForm::begin(['options' => ['id' => 'orderForm']]);
+    // echo $form->field($modelOrder, 'time')->input('date');
+    echo $form->field($modelOrder, 'pizzas')->dropDownList(ArrayHelper::map($pizzas, 'id', 'name'),  ['multiple' => 'true']);
+    echo $form->field($modelOrder, 'note')->textarea(['rows' => 5]);
+    echo Html::submitButton('Добавить', ['class' => 'btn btn-dark']);
+    ActiveForm::end();
+}
 
-$form = ActiveForm::begin(['options' => ['id' => 'orderForm']]);
-// echo $form->field($modelOrder, 'time')->input('date');
-echo $form->field($modelOrder, 'pizzas')->dropDownList(ArrayHelper::map($pizzas, 'id', 'name'),  ['multiple' => 'true']);
-echo $form->field($modelOrder, 'note')->textarea(['rows' => 5]);
-echo Html::submitButton('Добавить', ['class' => 'btn btn-dark']);
-ActiveForm::end();
 
 function debug($arr)
 {

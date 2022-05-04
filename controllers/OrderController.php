@@ -16,7 +16,7 @@ class OrderController extends \yii\web\Controller
         if (Yii::$app->request->isPost) {
             $dataPost = Yii::$app->request->post();
             // Пользователь пока всегда первый
-            $user = User::findOne(1);
+            $user = Yii::$app->user->identity;
             $pizzasId = $dataPost['Order']['pizzas'];
 
             // Создаем заказ 
@@ -46,10 +46,18 @@ class OrderController extends \yii\web\Controller
         // $searchModel = new Order();
         // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        if( Yii::$app->user->identity->role == 'admin'){
+            $query = Order::find()
+            ->joinWith('orderRows')
+            ->orderBy(['time' => SORT_DESC]);
+        } else {
+            $query = Order::find()
+            ->joinWith('orderRows')
+            ->where(['=', 'user_id', Yii::$app->user->identity->id])
+            ->orderBy(['time' => SORT_DESC]);
+        }
         $dataProvider = new ActiveDataProvider([
-            'query' => Order::find()
-                ->joinWith('orderRows')
-                ->orderBy(['time' => SORT_DESC]),  
+            'query' => $query,  
             'pagination' => [
                 'pageSize' => 20,
             ],
